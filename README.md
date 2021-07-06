@@ -16,6 +16,8 @@ The implementation is based on the method proposed in [this paper](https://www.s
 
 In the reference paper, the implementation was done using MATLAB, and some numerical results were presented. To compare the performance, numerical experiments were repeated using this implementation, and the result are available below. Results obtained on a laptop with Intel i7-7700HQ @ 2.80GHz processor. These results are reproducible using `src/experiments.jl`.
 
+We also considered implementation remarks made in the paper and implemented them in our code.
+
 ### Method
 
 The below description is based on the evaluation method used in the original paper.

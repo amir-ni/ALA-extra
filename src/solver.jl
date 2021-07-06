@@ -43,26 +43,31 @@ function systemSolver(A::AbstractMatrix{<:Real},    # in: equations matrix (m x 
     k = 1
     p = 1
     V = hcat(A[1, :])
-    x = x0 + (b[1] - dot(A[1, :], x0))/(dot(A[1, :], V[:,1])) * V[:,1]
+    x = x0 + (b[1] - dot(A[1, :], x0))/(dot(A[1, :], V[:, 1])) * V[:, 1]
+
+    denominators = zeros(Real, m-1)
     
     while k != m
         k = k + 1
         p = p + 1
-        if dot((A[k, :] - A[1, :]),V[:, k-1]) == 0
+        
+        denominators[k-1] = dot((A[k, :] - A[1, :]), V[:, k-1])
+        if denominators[k-1] == 0
             A[k, :] = - A[k, :]
             b[k] = - b[k]
+            denominators[k-1] = dot((A[k, :] - A[1, :]), V[:, k-1])
         end
 
         w = x0 + β * A[k, :]
         for j in 2:k
-            w = w + (b[j]-b[1]-dot(A[j, :]-A[1, :],w))/dot(A[j, :]-A[1, :],V[:,j-1]) * V[:,j-1]
+            w = w + (b[j]-b[1]-dot(A[j, :]-A[1, :], w))/denominators[j-1] * V[:, j-1]
         end
 
-        u = x + (b[k] - dot(A[k, :], x))/dot(A[k, :]-A[1, :], V[:,k-1]) * V[:,k-1]
+        u = x + (b[k] - dot(A[k, :], x))/denominators[k-1] * V[:, k-1]
         if u != w
             V = hcat(V, w - u)
             x = u + (b[1] - dot(A[1, :], u))/dot(A[1, :], V[:, k]) * V[:, k]
-        elseif dot(A[k, :],x) == b[k]
+        elseif dot(A[k, :], x) == b[k]
             if k != m
                 A = A[setdiff(1:end, k), :]
                 b = b[setdiff(1:end, k)]
